@@ -28,7 +28,7 @@ jobs:
 
       - name: Upload preview artifact
         id: docs_preview
-        uses: ProlificHunter15678956/html-preview-action@v5
+        uses: pavi2410/html-preview-action@v5
         with:
           html_file: index.html
           site_root: dist
