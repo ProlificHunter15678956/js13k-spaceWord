@@ -1,0 +1,35 @@
+name: Preview HTML in PR
+
+on:
+  pull_request:
+
+permissions:
+  actions: write
+  contents: read
+  issues: write
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Build docs
+        run: |
+          mkdir -p dist
+          cp index.html dist/index.html
+
+      - name: Upload preview artifact
+        id: docs_preview
+        uses: ProlificHunter15678956/html-preview-action@v5
+        with:
+          html_file: index.html
+          site_root: dist
+
+      - name: Comment preview artifact on PR
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            ${{ steps.docs_preview.outputs.comment_body }}
