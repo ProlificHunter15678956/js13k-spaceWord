@@ -1,7 +1,13 @@
 name: Preview HTML in PR
 
 on:
+  push:
+    branches:
+      - main
   pull_request:
+    branches:
+      - main
+    
 
 permissions:
   actions: write
