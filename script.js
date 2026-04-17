@@ -1,3 +1,12 @@
+
+
+import { readFileSync } from '/fs';
+const html = readFileSync('./index.html', 'utf-8');
+
+import { JSDOM } from 'jsdom';
+const dom = new JSDOM(html);
+const document = dom.window.document;
+
 const canvasWidth = document.getElementsByTagName('canvas')[0].clientWidth;
 const canvasHeight = document.getElementsByTagName('canvas')[0].clientHeight;
 
@@ -211,7 +220,7 @@ class Circle extends GameObject {
     update(secondsPassed) {
         this.x += this.vx * secondsPassed;
         this.y += this.vy * secondsPassed;
-    }
+    }html
 }
 
 function init() {
@@ -414,6 +423,8 @@ function beginGame() {
     init()
 }
 
+
+
 function timeToString(time) {
     //TODO - Entendi nada não mas tamo ai - https://tinloof.com/blog/how-to-build-a-stopwatch-with-html-css-js-react-part-2/
     let diffInHrs = time / 3600000;
@@ -455,3 +466,10 @@ function restartStateGame() {
     lastTime = 0
     invencibilityTime = 2000
 }
+
+document.getElementById('jogar-btn').addEventListener('click', beginGame);
+document.getElementById('midia-btn').addEventListener('click', sike);
+document.querySelector('#retry a[onclick]').addEventListener('click', beginGame);
+
+window.beginGame = beginGame;
+window.sike = sike;
