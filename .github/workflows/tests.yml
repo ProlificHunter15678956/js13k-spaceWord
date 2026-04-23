@@ -1,0 +1,54 @@
+name: Test Node.js Code with Jest
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Use Node.js 18.20.8
+      uses: actions/setup-node@v4
+      with:
+        node-version: 18.20.8
+        cache: 'npm'
+    - run: npm ci
+    
+    - name: Run tests with summary
+      run: |
+        echo "::group::🧪 Lancement des tests unitaires"
+        npm test -- --coverage --json --outputFile=jest-results.json 2>&1 | tee test-output.txt
+        echo "::endgroup::"
+
+        # Écrire un résumé dans l'onglet Actions
+        echo "## 🎮 Résultats CI — $(date)" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+        grep -E "(PASS|FAIL|Tests:)" test-output.txt >> $GITHUB_STEP_SUMMARY
+        echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+
+    - name: Notify Discord
+      if: always()
+      env:
+        DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+      run: |
+        python3 - <<'PY'
+        import json, os, requests
+        
+        try:
+          with open("jest-results.json") as f:
+            data = json.load(f)
+          status = "✅ PASSED" if data["success"] else "❌ FAILED"
+          content = f"Jest {status}: {data['numPassedTests']} passed, {data['numFailedTests']} failed, {data['numTotalTests']} total."
+        except FileNotFoundError:
+          content = "❌ Jest test results file not found"
+        except Exception as e:
+          content = f"❌ Error reading test results: {str(e)}"
+        
+        if os.environ.get("DISCORD_WEBHOOK_URL"):
+          requests.post(os.environ["DISCORD_WEBHOOK_URL"], json={"content": content})
+        PY

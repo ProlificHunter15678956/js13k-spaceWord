@@ -1,12 +1,3 @@
-
-
-import { readFileSync } from '/fs';
-const html = readFileSync('./index.html', 'utf-8');
-
-import { JSDOM } from 'jsdom';
-const dom = new JSDOM(html);
-const document = dom.window.document;
-
 const canvasWidth = document.getElementsByTagName('canvas')[0].clientWidth;
 const canvasHeight = document.getElementsByTagName('canvas')[0].clientHeight;
 
@@ -466,10 +457,3 @@ function restartStateGame() {
     lastTime = 0
     invencibilityTime = 2000
 }
-
-document.getElementById('jogar-btn').addEventListener('click', beginGame);
-document.getElementById('midia-btn').addEventListener('click', sike);
-document.querySelector('#retry a[onclick]').addEventListener('click', beginGame);
-
-window.beginGame = beginGame;
-window.sike = sike;
